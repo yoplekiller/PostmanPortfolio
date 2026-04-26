@@ -1,0 +1,44 @@
+name: Newman API Test
+
+permissions:
+  contents: write
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    - cron: '0 9 * * 1'
+ 
+    
+
+jobs:
+  newman-test:
+     runs-on: ubuntu-latest
+
+     steps:
+       - uses: actions/checkout@v4
+
+       - name: Install Newman
+         run: npm install -g newman newman-reporter-htmlextra
+
+       - name: Run Newman Tests
+         run: |
+           newman run "MOVIE_API_TEST.postman_collection.json" \
+             -e "TMDB ENV.postman_environment.json" \
+             --env-var   "api_key=${{ secrets.TMDB_API_KEY }}" \
+             -r htmlextra --reporter-htmlextra-export report.html
+
+       - name: Deploy Report to GitHub Pages
+         uses: peaceiris/actions-gh-pages@v4
+         with:
+           github_token: ${{ secrets.GITHUB_TOKEN }}
+           publish_dir: ./
+           publish_branch: gh-pages
+           include_files: report.html
+          
+       - name: Upload Report
+         uses: actions/upload-artifact@v4
+         with:
+           name: newman-report
+           path: report.html
