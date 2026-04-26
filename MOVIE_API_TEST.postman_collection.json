@@ -1,0 +1,213 @@
+{
+  "info": {
+    "_postman_id": "927f5fec-aa95-49f6-b822-01f1c209b1d7",
+    "name": "MOVIE_API_TEST",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "37056851"
+  },
+  "item": [
+    {
+      "name": "Get Popular Movies",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "let jsonData = pm.response.json();\r",
+              "\r",
+              "pm.test(\"Satus is 200\", function(){\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Results array exists\", function(){\r",
+              "    pm.expect(jsonData).to.have.property(\"results\");\r",
+              "    pm.expect(jsonData.results).to.be.an(\"array\");\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Results is not empty\", function () {\r",
+              "    pm.expect(jsonData.results.length).to.be.above(0);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/movie/popular?api_key={{api_key}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "movie",
+            "popular"
+          ],
+          "query": [
+            {
+              "key": "api_key",
+              "value": "{{api_key}}"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Search Movie",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "let jsonData = pm.response.json();\r",
+              "\r",
+              "pm.test(\"Status is 200\", function(){\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Results array exists\", function(){\r",
+              "    pm.expect(jsonData).to.have.property(\"results\");\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Search result contains keyword\", function () {\r",
+              "    pm.expect(jsonData.results[0].title.toLowerCase()).to.include(\"avengers\");\r",
+              "  });"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/search/movie?api_key={{api_key}}&query=avengers",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "search",
+            "movie"
+          ],
+          "query": [
+            {
+              "key": "api_key",
+              "value": "{{api_key}}"
+            },
+            {
+              "key": "query",
+              "value": "avengers"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Movie Detail",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "let jsonData = pm.response.json();\r",
+              "\r",
+              "pm.test(\"Status is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Movie ID matches\", function () {\r",
+              "    pm.expect(jsonData.id).to.eql(parseInt(pm.variables.get(\"movie_id\")));\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Title field exists\", function () {\r",
+              "    pm.expect(jsonData).to.have.property(\"title\");\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Vote average is a number\", function () {\r",
+              "    pm.expect(jsonData.vote_average).to.be.a(\"number\");\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/movie/{{movie_id}}?api_key={{api_key}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "movie",
+            "{{movie_id}}"
+          ],
+          "query": [
+            {
+              "key": "api_key",
+              "value": "{{api_key}}"
+            }
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://simple-tool-rental-api.glitch.me/status"
+    },
+    {
+      "key": "apiToken",
+      "value": "fix me"
+    },
+    {
+      "key": "firstName",
+      "value": ""
+    }
+  ]
+}
