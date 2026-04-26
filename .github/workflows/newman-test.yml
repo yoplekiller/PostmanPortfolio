@@ -1,0 +1,30 @@
+name: Newman API Test
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '0 9 * * 1'
+
+jobs:
+  newman-test:
+     runs-on: ubuntu-latest
+
+     steps:
+       - uses: actions/checkout@v3
+
+       - name: Install Newman
+         run: npm install -g newman newman-reporter-htmlextra
+
+       - name: Run Newman Tests
+         run: |
+           newman run "MOVIE_API_TEST.postman_collection.json" \
+             -e "TMDB ENV.postman_environment.json" \
+             --env-var "api_key=${{ secrets.TMDB_API_KEY }}" \
+             -r htmlextra --reporter-htmlextra-export report.html
+
+       - name: Upload Report
+         uses: actions/upload-artifact@v3
+         with:
+           name: newman-report
+           path: report.html
