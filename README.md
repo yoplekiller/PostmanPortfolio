@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Postman API Test Portfolio
 
 ![Newman API Test](https://github.com/yoplekiller/PostmanPortfolio/actions/workflows/newman-test.yml/badge.svg)
@@ -45,6 +44,4 @@ newman run "MOVIE_API_TEST.postman_collection.json" \
   -r htmlextra --reporter-htmlextra-export report.html
 ```
 =======
-![Newman API Test](https://github.com/yoplekiller/PostmanPortfolio/actions/workflows/newman-test.yml/badge.svg)
-[![View Test Report](https://img.shields.io/badge/Report-View%20Now-blue)](https://yoplekiller.github.io/PostmanPortfolio/report.html)
->>>>>>> efed125efce6c0d38b2079032c69e08b5bd98af8
+
