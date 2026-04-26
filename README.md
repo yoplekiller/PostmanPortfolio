@@ -43,3 +43,4 @@ newman run "MOVIE_API_TEST.postman_collection.json" \
   --env-var "movie_id=550" \
   -r htmlextra --reporter-htmlextra-export report.html
 ```
+
