@@ -29,6 +29,22 @@ jobs:
              --env-var   "api_key=${{ secrets.TMDB_API_KEY }}" \
              -r htmlextra --reporter-htmlextra-export report.html
 
+       - name: Run Delivery Type Mock Tests
+         if: ${{ secrets.DELIVERY_MOCK_URL != '' }}
+         run: |
+           newman run "DELIVERY_TYPE_MOCK_TEST.postman_collection.json" \
+             -e "DELIVERY_MOCK_ENV.postman_environment.json" \
+             --env-var "base_url=${{ secrets.DELIVERY_MOCK_URL }}" \
+             -r htmlextra --reporter-htmlextra-export delivery-report.html
+
+       - name: Run Coupon API Mock Tests
+         if: ${{ secrets.COUPON_MOCK_URL != '' }}
+         run: |
+           newman run "COUPON_API_TEST.postman_collection.json" \
+             -e "COUPON_API_MOCK_ENV.postman_environment.json" \
+             --env-var "base_url=${{ secrets.COUPON_MOCK_URL }}" \
+             -r htmlextra --reporter-htmlextra-export coupon-report.html
+
        - name: Deploy Report to GitHub Pages
          uses: peaceiris/actions-gh-pages@v4
          with:
@@ -42,3 +58,17 @@ jobs:
          with:
            name: newman-report
            path: report.html
+
+       - name: Upload Delivery Mock Report
+         if: ${{ secrets.DELIVERY_MOCK_URL != '' }}
+         uses: actions/upload-artifact@v4
+         with:
+           name: delivery-mock-report
+           path: delivery-report.html
+
+       - name: Upload Coupon Mock Report
+         if: ${{ secrets.COUPON_MOCK_URL != '' }}
+         uses: actions/upload-artifact@v4
+         with:
+           name: coupon-mock-report
+           path: coupon-report.html

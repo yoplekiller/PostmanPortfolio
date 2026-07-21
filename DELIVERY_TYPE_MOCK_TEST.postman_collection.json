@@ -1,0 +1,319 @@
+{
+  "info": {
+    "_postman_id": "54777897-bfdd-44a2-ab48-b004cd008ad0",
+    "name": "DELIVERY_TYPE_MOCK_TEST",
+    "description": "배민 도메인 기반 '배달방식 x 가게 운영상태' 유형 매트릭스를 Postman Mock Server로 시뮬레이션하고 Newman으로 검증하는 컬렉션. 실제 배민 API는 로그인/인증이 필요해 외부에서 직접 호출할 수 없어, 각 요청에 저장된 example 응답을 Mock Server가 반환하도록 구성했다. docs/delivery_type_test_design.md 참고.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "37056851"
+  },
+  "item": [
+    {
+      "name": "Get Shop - Open & Store Delivery Available",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "let jsonData = pm.response.json();\r",
+              "\r",
+              "pm.test(\"Status is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response has delivery_types with all 5 flags\", function () {\r",
+              "    pm.expect(jsonData).to.have.property(\"delivery_types\");\r",
+              "    pm.expect(jsonData.delivery_types).to.have.all.keys(\r",
+              "        \"store_delivery\", \"baemin_delivery\", \"saving_delivery\", \"pickup\", \"dine_in\"\r",
+              "    );\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Case 1: OPEN + store_delivery on -> orderable\", function () {\r",
+              "    const d = jsonData.delivery_types;\r",
+              "    const hasAnyMethod = d.store_delivery || d.baemin_delivery || d.saving_delivery || d.pickup || d.dine_in;\r",
+              "    const isOrderable = jsonData.shop_status === \"OPEN\" && hasAnyMethod;\r",
+              "\r",
+              "    pm.expect(isOrderable).to.eql(true);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Delivery fee exists and is a number when delivery is available\", function () {\r",
+              "    pm.expect(jsonData.delivery_fee).to.be.a(\"number\");\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/shops/1001",
+          "host": ["{{base_url}}"],
+          "path": ["shops", "1001"]
+        },
+        "description": "Case 1 (design doc #1): shop_status=OPEN, store_delivery=true -> 주문 가능 상태, 배달비 필드 존재"
+      },
+      "response": [
+        {
+          "id": "dfccd5c3-b052-486f-974c-4da3dc2262cb",
+          "name": "Open shop with store delivery",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/shops/1001",
+              "host": ["{{base_url}}"],
+              "path": ["shops", "1001"]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            { "key": "Content-Type", "value": "application/json" }
+          ],
+          "cookie": [],
+          "body": "{\n  \"shop_id\": \"1001\",\n  \"shop_status\": \"OPEN\",\n  \"delivery_types\": {\n    \"store_delivery\": true,\n    \"baemin_delivery\": false,\n    \"saving_delivery\": false,\n    \"pickup\": false,\n    \"dine_in\": false\n  },\n  \"delivery_fee\": 3000\n}"
+        }
+      ]
+    },
+    {
+      "name": "Get Shop - Closed & Delivery Flag On (Should Not Be Orderable)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "let jsonData = pm.response.json();\r",
+              "\r",
+              "pm.test(\"Status is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"shop_status is CLOSED\", function () {\r",
+              "    pm.expect(jsonData.shop_status).to.eql(\"CLOSED\");\r",
+              "});\r",
+              "\r",
+              "pm.test(\"store_delivery flag is still true (raw flag unaffected by shop status)\", function () {\r",
+              "    pm.expect(jsonData.delivery_types.store_delivery).to.eql(true);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Case 2: CLOSED overrides delivery flag -> not orderable\", function () {\r",
+              "    const d = jsonData.delivery_types;\r",
+              "    const hasAnyMethod = d.store_delivery || d.baemin_delivery || d.saving_delivery || d.pickup || d.dine_in;\r",
+              "    const isOrderable = jsonData.shop_status === \"OPEN\" && hasAnyMethod;\r",
+              "\r",
+              "    pm.expect(isOrderable).to.eql(false);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/shops/1002",
+          "host": ["{{base_url}}"],
+          "path": ["shops", "1002"]
+        },
+        "description": "Case 2 (design doc #2): shop_status=CLOSED, store_delivery=true -> 배달방식 on이어도 가게 마감이면 주문 불가 응답이어야 함"
+      },
+      "response": [
+        {
+          "id": "daaa0526-6f50-48ff-a2d9-c67c0f9f8a1d",
+          "name": "Closed shop with store delivery flag on",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/shops/1002",
+              "host": ["{{base_url}}"],
+              "path": ["shops", "1002"]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            { "key": "Content-Type", "value": "application/json" }
+          ],
+          "cookie": [],
+          "body": "{\n  \"shop_id\": \"1002\",\n  \"shop_status\": \"CLOSED\",\n  \"delivery_types\": {\n    \"store_delivery\": true,\n    \"baemin_delivery\": false,\n    \"saving_delivery\": false,\n    \"pickup\": false,\n    \"dine_in\": false\n  },\n  \"delivery_fee\": 3000\n}"
+        }
+      ]
+    },
+    {
+      "name": "Get Shop - Open & Pickup Only",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "let jsonData = pm.response.json();\r",
+              "\r",
+              "pm.test(\"Status is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Only pickup is true among delivery_types\", function () {\r",
+              "    const d = jsonData.delivery_types;\r",
+              "    pm.expect(d.pickup).to.eql(true);\r",
+              "    pm.expect(d.store_delivery).to.eql(false);\r",
+              "    pm.expect(d.baemin_delivery).to.eql(false);\r",
+              "    pm.expect(d.saving_delivery).to.eql(false);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Case 3: OPEN + pickup only -> orderable\", function () {\r",
+              "    const d = jsonData.delivery_types;\r",
+              "    const hasAnyMethod = d.store_delivery || d.baemin_delivery || d.saving_delivery || d.pickup || d.dine_in;\r",
+              "    const isOrderable = jsonData.shop_status === \"OPEN\" && hasAnyMethod;\r",
+              "\r",
+              "    pm.expect(isOrderable).to.eql(true);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Delivery fee is null when only pickup is available\", function () {\r",
+              "    pm.expect(jsonData.delivery_fee).to.eql(null);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/shops/1003",
+          "host": ["{{base_url}}"],
+          "path": ["shops", "1003"]
+        },
+        "description": "Case 3 (design doc #3): shop_status=OPEN, 전체 delivery_types false + pickup=true -> 픽업만 가능한 응답 구조 확인"
+      },
+      "response": [
+        {
+          "id": "91fbb194-8f4c-4b36-bd86-7a192d7dfa21",
+          "name": "Open shop, pickup only",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/shops/1003",
+              "host": ["{{base_url}}"],
+              "path": ["shops", "1003"]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            { "key": "Content-Type", "value": "application/json" }
+          ],
+          "cookie": [],
+          "body": "{\n  \"shop_id\": \"1003\",\n  \"shop_status\": \"OPEN\",\n  \"delivery_types\": {\n    \"store_delivery\": false,\n    \"baemin_delivery\": false,\n    \"saving_delivery\": false,\n    \"pickup\": true,\n    \"dine_in\": false\n  },\n  \"delivery_fee\": null\n}"
+        }
+      ]
+    },
+    {
+      "name": "Get Shop - Open & No Delivery Method Available",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "let jsonData = pm.response.json();\r",
+              "\r",
+              "pm.test(\"Status is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"All delivery_types flags are false\", function () {\r",
+              "    const d = jsonData.delivery_types;\r",
+              "    pm.expect(Object.values(d).every(v => v === false)).to.eql(true);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Case 4: OPEN but no method available -> not orderable\", function () {\r",
+              "    const d = jsonData.delivery_types;\r",
+              "    const hasAnyMethod = d.store_delivery || d.baemin_delivery || d.saving_delivery || d.pickup || d.dine_in;\r",
+              "    const isOrderable = jsonData.shop_status === \"OPEN\" && hasAnyMethod;\r",
+              "\r",
+              "    pm.expect(isOrderable).to.eql(false);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Delivery fee is null when no method is available\", function () {\r",
+              "    pm.expect(jsonData.delivery_fee).to.eql(null);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/shops/1004",
+          "host": ["{{base_url}}"],
+          "path": ["shops", "1004"]
+        },
+        "description": "Case 4 (design doc #4): shop_status=OPEN, 전체 delivery_types false -> 주문 가능한 방식이 하나도 없을 때의 에러/빈 상태 응답 확인"
+      },
+      "response": [
+        {
+          "id": "76a96ea5-8568-4c85-af1c-c549985d8c4c",
+          "name": "Open shop, no delivery method available",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/shops/1004",
+              "host": ["{{base_url}}"],
+              "path": ["shops", "1004"]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            { "key": "Content-Type", "value": "application/json" }
+          ],
+          "cookie": [],
+          "body": "{\n  \"shop_id\": \"1004\",\n  \"shop_status\": \"OPEN\",\n  \"delivery_types\": {\n    \"store_delivery\": false,\n    \"baemin_delivery\": false,\n    \"saving_delivery\": false,\n    \"pickup\": false,\n    \"dine_in\": false\n  },\n  \"delivery_fee\": null\n}"
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "exec": [""]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "exec": [""]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": ""
+    }
+  ]
+}
