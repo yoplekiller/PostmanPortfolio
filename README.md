@@ -91,7 +91,7 @@ CI에서는 GitHub secret `DELIVERY_MOCK_URL`이 설정된 경우에만 이 테�
 
 ## 3. OpenAPI 명세 → AI 기반 Postman 테스트케이스 자동 생성
 
-`generate_api_tests.py`에 OpenAPI 명세(YAML/JSON)를 넣으면, 엔드포인트마다 Groq(llama-3.3-70b)가
+`generate_api_tests.py`에 OpenAPI 명세(YAML/JSON)를 넣으면, 엔드포인트마다 Groq(GPT-OSS 120B)가
 정상/경계값/상태전이/예외처리 관점의 테스트케이스를 설계하고, Postman 컬렉션(+ mock 응답 + 설계 문서)을
 자동 생성합니다.
 

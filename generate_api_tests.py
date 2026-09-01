@@ -27,7 +27,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-MODEL = "llama-3.3-70b-versatile"
+MODEL = "openai/gpt-oss-120b"
 
 CATEGORY_GUIDE = {
     "정상": "명세대로 정상 흐름이 성공하는 케이스",
@@ -196,7 +196,17 @@ def call_groq_for_cases(client: Groq, path: str, method: str, op: dict) -> list:
 
 # ── Postman test script 컴파일 (결정적, LLM 산출물 그대로 실행 안 함) ──
 
-def compile_test_script(expected_status: int, assertions: list) -> list:
+def _get_nested(obj: dict, dotted_path: str):
+    """mock_response에서 dot 표기 경로의 실제 값을 찾는다. (found, value) 튜플 반환."""
+    cur = obj
+    for part in dotted_path.split("."):
+        if not isinstance(cur, dict) or part not in cur:
+            return False, None
+        cur = cur[part]
+    return True, cur
+
+
+def compile_test_script(expected_status: int, assertions: list, mock_response: dict = None) -> list:
     lines = ["let jsonData = pm.response.json();", ""]
     lines.append(f'pm.test("Status is {expected_status}", function () {{')
     lines.append(f"    pm.response.to.have.status({expected_status});")
@@ -209,6 +219,15 @@ def compile_test_script(expected_status: int, assertions: list) -> list:
         if not _FIELD_PATTERN.match(field):
             lines.append(f"\n// [건너뜀] 허용되지 않는 field 표기: {field!r}")
             continue
+
+        # eq/gte/lte는 assertion에 LLM이 따로 적어준 값 대신, mock_response의 실제 값을 정답으로 삼는다.
+        # LLM이 mock_response.error와 assertions[].value에 미묘하게 다른 문자열(오타/공백)을 각각
+        # 만들어내는 사례가 실제로 있었기 때문 — 같은 값을 두 곳에 중복 생성하게 하지 않고, 한쪽(mock_response)을
+        # 유일한 정답으로 코드가 강제한다.
+        if op in ("eq", "gte", "lte") and mock_response is not None:
+            found, resolved = _get_nested(mock_response, field)
+            if found:
+                value = resolved
 
         test_name = json.dumps(f"{field} {op} {value if value is not None else ''}".strip(), ensure_ascii=False)
         accessor = f"jsonData.{field}"
@@ -276,7 +295,7 @@ def build_request_item(path: str, method: str, case: dict, case_idx: int) -> dic
             "options": {"raw": {"language": "json"}},
         }
 
-    test_script = compile_test_script(expected_status, case.get("assertions", []))
+    test_script = compile_test_script(expected_status, case.get("assertions", []), mock_response)
 
     example = {
         "id": str(uuid.uuid4()),
@@ -349,7 +368,7 @@ def build_environment(name: str) -> dict:
 def write_design_doc(out_path: str, spec: dict, endpoints_with_cases: list):
     lines = [f"# {spec.get('info', {}).get('title', 'API')} 테스트 설계 (AI 생성 초안)", ""]
     lines.append(
-        "`generate_api_tests.py`가 OpenAPI 명세를 읽고 Groq(llama-3.3-70b)로 생성한 테스트케이스 "
+        "`generate_api_tests.py`가 OpenAPI 명세를 읽고 Groq(GPT-OSS 120B)로 생성한 테스트케이스 "
         "초안입니다. LLM은 테스트 의도(카테고리/조건/기대값)까지만 생성하고, 실행되는 Postman test "
         "script(JS)는 파이썬 코드가 결정적으로 컴파일합니다."
     )
