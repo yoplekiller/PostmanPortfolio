@@ -1,0 +1,117 @@
+openapi: 3.0.3
+info:
+  title: Coupon API
+  description: >
+    쿠폰 발급/사용/조회 API 명세. 실무에서 자주 마주치는 "상태 전이 + 경계값" 패턴
+    (발급 → 사용 → 만료, 최소 주문 금액, 중복 사용 방지)을 담은 샘플 스펙.
+    실제 서비스 API가 아니라 generate_api_tests.py의 입력 예시로 작성됨.
+  version: 1.0.0
+
+paths:
+  /users/{userId}/coupons:
+    post:
+      summary: 쿠폰 발급
+      description: 사용자에게 쿠폰 코드를 발급한다. 이미 발급받은 코드는 재발급할 수 없다.
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [couponCode]
+              properties:
+                couponCode:
+                  type: string
+                  description: 쿠폰 코드 (영문 대문자+숫자, 6~12자)
+      responses:
+        "201":
+          description: 발급 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  couponId: { type: string }
+                  status: { type: string, enum: [ISSUED] }
+                  expiresAt: { type: string, format: date-time }
+        "404":
+          description: 존재하지 않는 쿠폰 코드
+        "409":
+          description: 이미 발급받은 코드 (중복 발급)
+        "410":
+          description: 발급 기간이 지난 코드 (만료)
+
+  /coupons/{couponId}/use:
+    post:
+      summary: 쿠폰 사용
+      description: >
+        주문에 쿠폰을 적용해 할인 금액을 확정한다. 최소 주문 금액 미달, 이미 사용된 쿠폰,
+        만료된 쿠폰은 사용할 수 없다.
+      parameters:
+        - name: couponId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [orderId, orderAmount]
+              properties:
+                orderId:
+                  type: string
+                orderAmount:
+                  type: integer
+                  description: 주문 금액 (원). 쿠폰별 최소 주문 금액(minOrderAmount)을 넘어야 사용 가능
+      responses:
+        "200":
+          description: 사용 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  couponId: { type: string }
+                  status: { type: string, enum: [USED] }
+                  discountAmount: { type: integer }
+        "400":
+          description: 최소 주문 금액 미달
+        "404":
+          description: 존재하지 않는 쿠폰
+        "409":
+          description: 이미 사용된 쿠폰
+        "410":
+          description: 만료된 쿠폰
+
+  /coupons/{couponId}:
+    get:
+      summary: 쿠폰 상태 조회
+      parameters:
+        - name: couponId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: 조회 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  couponId: { type: string }
+                  status: { type: string, enum: [ISSUED, USED, EXPIRED] }
+                  minOrderAmount: { type: integer }
+                  expiresAt: { type: string, format: date-time }
+        "404":
+          description: 존재하지 않는 쿠폰

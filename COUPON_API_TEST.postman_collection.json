@@ -1,0 +1,1485 @@
+{
+  "info": {
+    "_postman_id": "874314ee-dc87-4165-bea4-e6fd2bc903a3",
+    "name": "COUPON_API_TEST",
+    "description": "Coupon API — OpenAPI 명세 기반 AI 생성 테스트케이스 (generate_api_tests.py, docs 참고)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "POST /users/{userId}/coupons",
+      "item": [
+        {
+          "name": "ValidCoupon [정상]",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let jsonData = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"Status is 201\", function () {\r",
+                  "    pm.response.to.have.status(201);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"couponId exists string\", function () {\r",
+                  "    pm.expect(jsonData).to.have.nested.property(\"couponId\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"status eq ISSUED\", function () {\r",
+                  "    pm.expect(jsonData.status).to.eql(\"ISSUED\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"expiresAt exists string\", function () {\r",
+                  "    pm.expect(jsonData).to.have.nested.property(\"expiresAt\");\r",
+                  "});\r"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/1/coupons",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "1",
+                "coupons"
+              ]
+            },
+            "description": "[정상] 유효한 쿠폰 코드로 발급을 성공하는 케이스",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"couponCode\": \"ABC123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "3824eedf-4646-42b7-8bb2-ece1aa54d46b",
+              "name": "ValidCoupon",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/users/1/coupons",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "users",
+                    "1",
+                    "coupons"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"couponCode\": \"ABC123\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"couponId\": \"1\",\n  \"status\": \"ISSUED\",\n  \"expiresAt\": \"2024-12-31T23:59:59Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "InvalidCouponLength [경계값]",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let jsonData = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"Status is 404\", function () {\r",
+                  "    pm.response.to.have.status(404);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"error eq 쿠폰 코드가 너무 짧습니다.\", function () {\r",
+                  "    pm.expect(jsonData.error).to.eql(\"쿠폰 코드가 너무 짧습니다.\");\r",
+                  "});\r"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/1-C2/coupons",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "1-C2",
+                "coupons"
+              ]
+            },
+            "description": "[경계값] 쿠폰 코드의 길이가 qu 경우 발급 실패하는 케이스",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"couponCode\": \"ABC\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "2252edf9-0b10-4f84-970c-f12f6ec27509",
+              "name": "InvalidCouponLength",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/users/1-C2/coupons",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "users",
+                    "1-C2",
+                    "coupons"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"couponCode\": \"ABC\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"error\": \"쿠폰 코드가 너무 짧습니다.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "ExpiredCoupon [상태전이]",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let jsonData = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"Status is 410\", function () {\r",
+                  "    pm.response.to.have.status(410);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"error eq 쿠폰 코드의 발급 기간이 지나했습니다.\", function () {\r",
+                  "    pm.expect(jsonData.error).to.eql(\"쿠폰 코드의 발급 기간이 지나했습니다.\");\r",
+                  "});\r"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/1-C3/coupons",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "1-C3",
+                "coupons"
+              ]
+            },
+            "description": "[상태전이] 만료된 쿠폰 코드로 발급신청을 실패하는 케이스",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"couponCode\": \"ABC123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "d4a9fc2d-ab51-41e5-9f7d-6450992f74f6",
+              "name": "ExpiredCoupon",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/users/1-C3/coupons",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "users",
+                    "1-C3",
+                    "coupons"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"couponCode\": \"ABC123\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Gone",
+              "code": 410,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"error\": \"쿠폰 코드의 발급 기간이 지나했습니다.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "AlreadyIssuedCoupon [예외처리]",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let jsonData = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"Status is 409\", function () {\r",
+                  "    pm.response.to.have.status(409);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"error eq 이미 발급받은 쿠폰 코드입니다.\", function () {\r",
+                  "    pm.expect(jsonData.error).to.eql(\"이미 발급받은 쿠폰 코드입니다.\");\r",
+                  "});\r"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/1-C4/coupons",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "1-C4",
+                "coupons"
+              ]
+            },
+            "description": "[예외처리] 이미 발급받은 쿠폰 코드로 발급신청을 실패하는 케이스",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"couponCode\": \"ABC123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "410a93f1-39e6-459c-b454-f6077968a13e",
+              "name": "AlreadyIssuedCoupon",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/users/1-C4/coupons",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "users",
+                    "1-C4",
+                    "coupons"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"couponCode\": \"ABC123\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"error\": \"이미 발급받은 쿠폰 코드입니다.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "NotFoundCoupon [예외처리]",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let jsonData = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"Status is 404\", function () {\r",
+                  "    pm.response.to.have.status(404);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"error eq 쿠폰 코드를 찾을 수 없습니다.\", function () {\r",
+                  "    pm.expect(jsonData.error).to.eql(\"쿠폰 코드를 찾을 수 없습니다.\");\r",
+                  "});\r"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/1-C5/coupons",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "1-C5",
+                "coupons"
+              ]
+            },
+            "description": "[예외처리] 존재하지 않는 쿠폰 코드로 발급신청을 실패하는 케이스",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"couponCode\": \"NOT_FOUND\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "50916f83-30bf-4846-93b5-ef24d9ff4ec2",
+              "name": "NotFoundCoupon",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/users/1-C5/coupons",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "users",
+                    "1-C5",
+                    "coupons"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"couponCode\": \"NOT_FOUND\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"error\": \"쿠폰 코드를 찾을 수 없습니다.\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "POST /coupons/{couponId}/use",
+      "item": [
+        {
+          "name": "NormalUsage [정상]",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let jsonData = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"Status is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"couponId eq COUPON-123\", function () {\r",
+                  "    pm.expect(jsonData.couponId).to.eql(\"COUPON-123\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"status eq USED\", function () {\r",
+                  "    pm.expect(jsonData.status).to.eql(\"USED\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"discountAmount gte 1000\", function () {\r",
+                  "    pm.expect(jsonData.discountAmount).to.be.at.least(1000);\r",
+                  "});\r"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/coupons/COUPON-123/use",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "coupons",
+                "COUPON-123",
+                "use"
+              ]
+            },
+            "description": "[정상] 쿠폰 사용이 정상적으로 처리되는지 검증",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"ORDER-123\",\n  \"orderAmount\": 10000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "939d774d-4159-4fe4-834d-2afac210f3f6",
+              "name": "NormalUsage",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/coupons/COUPON-123/use",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "coupons",
+                    "COUPON-123",
+                    "use"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"orderId\": \"ORDER-123\",\n  \"orderAmount\": 10000\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"couponId\": \"COUPON-123\",\n  \"status\": \"USED\",\n  \"discountAmount\": 1000\n}"
+            }
+          ]
+        },
+        {
+          "name": "InsufficientOrderAmount [경계값]",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let jsonData = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"Status is 400\", function () {\r",
+                  "    pm.response.to.have.status(400);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"error eq 최소 주문 금액 미달\", function () {\r",
+                  "    pm.expect(jsonData.error).to.eql(\"최소 주문 금액 미달\");\r",
+                  "});\r"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/coupons/COUPON-123-C2/use",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "coupons",
+                "COUPON-123-C2",
+                "use"
+              ]
+            },
+            "description": "[경계값] 최소 주문 금액 미달 시 처리되는지 검증",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"ORDER-123\",\n  \"orderAmount\": 0\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "c4608dde-ec5b-45f0-8bd1-b813df984627",
+              "name": "InsufficientOrderAmount",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/coupons/COUPON-123-C2/use",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "coupons",
+                    "COUPON-123-C2",
+                    "use"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"orderId\": \"ORDER-123\",\n  \"orderAmount\": 0\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"error\": \"최소 주문 금액 미달\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "AlreadyUsedCoupon [상태전이]",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let jsonData = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"Status is 409\", function () {\r",
+                  "    pm.response.to.have.status(409);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"error eq 이미 사용된 쿠폰\", function () {\r",
+                  "    pm.expect(jsonData.error).to.eql(\"이미 사용된 쿠폰\");\r",
+                  "});\r"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/coupons/COUPON-123-C3/use",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "coupons",
+                "COUPON-123-C3",
+                "use"
+              ]
+            },
+            "description": "[상태전이] 이미 사용된 쿠폰을 사용하려고 할 때 처리되는지 검증",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"ORDER-123\",\n  \"orderAmount\": 10000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "e80eeacd-e7c7-45e1-99e1-990ddb0c9b1d",
+              "name": "AlreadyUsedCoupon",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/coupons/COUPON-123-C3/use",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "coupons",
+                    "COUPON-123-C3",
+                    "use"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"orderId\": \"ORDER-123\",\n  \"orderAmount\": 10000\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"error\": \"이미 사용된 쿠폰\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "NonExistingCoupon [예외처리]",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let jsonData = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"Status is 404\", function () {\r",
+                  "    pm.response.to.have.status(404);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"error eq 존재하지 않는 쿠폰\", function () {\r",
+                  "    pm.expect(jsonData.error).to.eql(\"존재하지 않는 쿠폰\");\r",
+                  "});\r"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/coupons/COUPON-999/use",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "coupons",
+                "COUPON-999",
+                "use"
+              ]
+            },
+            "description": "[예외처리] 존재하지 않는 쿠폰을 사용하려고 할 때 처리되는지 검증",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"ORDER-123\",\n  \"orderAmount\": 10000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "91b7ab90-aa49-4710-ac3c-5c9d676abeb7",
+              "name": "NonExistingCoupon",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/coupons/COUPON-999/use",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "coupons",
+                    "COUPON-999",
+                    "use"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"orderId\": \"ORDER-123\",\n  \"orderAmount\": 10000\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"error\": \"존재하지 않는 쿠폰\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "ExpiredCoupon [예외처리]",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let jsonData = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"Status is 410\", function () {\r",
+                  "    pm.response.to.have.status(410);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"error eq 만료된 쿠폰\", function () {\r",
+                  "    pm.expect(jsonData.error).to.eql(\"만료된 쿠폰\");\r",
+                  "});\r"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/coupons/COUPON-123-C5/use",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "coupons",
+                "COUPON-123-C5",
+                "use"
+              ]
+            },
+            "description": "[예외처리] 만료된 쿠폰을 사용하려고 할 때 처리되는지 검증",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"ORDER-123\",\n  \"orderAmount\": 10000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "69293ed1-9c53-4659-9227-3a3451b0c037",
+              "name": "ExpiredCoupon",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/coupons/COUPON-123-C5/use",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "coupons",
+                    "COUPON-123-C5",
+                    "use"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"orderId\": \"ORDER-123\",\n  \"orderAmount\": 10000\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Gone",
+              "code": 410,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"error\": \"만료된 쿠폰\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "MinimumOrderAmountNotMet [예외처리]",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let jsonData = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"Status is 400\", function () {\r",
+                  "    pm.response.to.have.status(400);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"error eq 최소 주문 금액 미달\", function () {\r",
+                  "    pm.expect(jsonData.error).to.eql(\"최소 주문 금액 미달\");\r",
+                  "});\r"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/coupons/COUPON-123-C6/use",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "coupons",
+                "COUPON-123-C6",
+                "use"
+              ]
+            },
+            "description": "[예외처리] 최소 주문 금액 미달 시 처리되는지 검증",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"ORDER-123\",\n  \"orderAmount\": 0\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "758d9e59-30d4-4f46-8a31-46b461c7d132",
+              "name": "MinimumOrderAmountNotMet",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/coupons/COUPON-123-C6/use",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "coupons",
+                    "COUPON-123-C6",
+                    "use"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"orderId\": \"ORDER-123\",\n  \"orderAmount\": 0\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"error\": \"최소 주문 금액 미달\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "GET /coupons/{couponId}",
+      "item": [
+        {
+          "name": "NormalGetCoupon [정상]",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let jsonData = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"Status is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"couponId eq 정상적인 쿠폰 아이디\", function () {\r",
+                  "    pm.expect(jsonData.couponId).to.eql(\"정상적인 쿠폰 아이디\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"status eq ISSUED\", function () {\r",
+                  "    pm.expect(jsonData.status).to.eql(\"ISSUED\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"minOrderAmount eq 10000\", function () {\r",
+                  "    pm.expect(jsonData.minOrderAmount).to.eql(10000);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"expiresAt exists string\", function () {\r",
+                  "    pm.expect(jsonData).to.have.nested.property(\"expiresAt\");\r",
+                  "});\r"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/coupons/정상적인 쿠폰 아이디",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "coupons",
+                "정상적인 쿠폰 아이디"
+              ]
+            },
+            "description": "[정상] 쿠폰 상태 조회가 정상적으로 성공하는지를 검증"
+          },
+          "response": [
+            {
+              "id": "1faa352f-8580-48ae-91d3-aee5675f1f81",
+              "name": "NormalGetCoupon",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/coupons/정상적인 쿠폰 아이디",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "coupons",
+                    "정상적인 쿠폰 아이디"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"couponId\": \"정상적인 쿠폰 아이디\",\n  \"status\": \"ISSUED\",\n  \"minOrderAmount\": 10000,\n  \"expiresAt\": \"2024-12-31T23:59:59Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "GetCouponNotExist [예외처리]",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let jsonData = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"Status is 404\", function () {\r",
+                  "    pm.response.to.have.status(404);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"error eq 존재하지 않는 쿠폰\", function () {\r",
+                  "    pm.expect(jsonData.error).to.eql(\"존재하지 않는 쿠폰\");\r",
+                  "});\r"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/coupons/존재하지 않는 쿠폰 아이디",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "coupons",
+                "존재하지 않는 쿠폰 아이디"
+              ]
+            },
+            "description": "[예외처리] 쿠폰이 존재하지 않는 경우 404 응답을 받는지 검증"
+          },
+          "response": [
+            {
+              "id": "ac1c9ad1-7d0a-4a6c-89c2-8d5a0bd8606e",
+              "name": "GetCouponNotExist",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/coupons/존재하지 않는 쿠폰 아이디",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "coupons",
+                    "존재하지 않는 쿠폰 아이디"
+                  ]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"error\": \"존재하지 않는 쿠폰\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "GetCouponStatusUsed [상태전이]",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let jsonData = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"Status is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"couponId eq 이미 사용된 쿠폰 아이디\", function () {\r",
+                  "    pm.expect(jsonData.couponId).to.eql(\"이미 사용된 쿠폰 아이디\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"status eq USED\", function () {\r",
+                  "    pm.expect(jsonData.status).to.eql(\"USED\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"minOrderAmount eq 10000\", function () {\r",
+                  "    pm.expect(jsonData.minOrderAmount).to.eql(10000);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"expiresAt exists string\", function () {\r",
+                  "    pm.expect(jsonData).to.have.nested.property(\"expiresAt\");\r",
+                  "});\r"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/coupons/이미 사용된 쿠폰 아이디",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "coupons",
+                "이미 사용된 쿠폰 아이디"
+              ]
+            },
+            "description": "[상태전이] 이미 사용된 쿠폰의 상태를 조회하는 경우에 대한 응답을 검증"
+          },
+          "response": [
+            {
+              "id": "56cf6e17-5c0d-4bbc-acfb-289b4cb48b9f",
+              "name": "GetCouponStatusUsed",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/coupons/이미 사용된 쿠폰 아이디",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "coupons",
+                    "이미 사용된 쿠폰 아이디"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"couponId\": \"이미 사용된 쿠폰 아이디\",\n  \"status\": \"USED\",\n  \"minOrderAmount\": 10000,\n  \"expiresAt\": \"2024-12-31T23:59:59Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "GetCouponStatusExpired [상태전이]",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let jsonData = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"Status is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"couponId eq 이미 만료된 쿠폰 아이디\", function () {\r",
+                  "    pm.expect(jsonData.couponId).to.eql(\"이미 만료된 쿠폰 아이디\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"status eq EXPIRED\", function () {\r",
+                  "    pm.expect(jsonData.status).to.eql(\"EXPIRED\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"minOrderAmount eq 10000\", function () {\r",
+                  "    pm.expect(jsonData.minOrderAmount).to.eql(10000);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"expiresAt exists string\", function () {\r",
+                  "    pm.expect(jsonData).to.have.nested.property(\"expiresAt\");\r",
+                  "});\r"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/coupons/이미 만료된 쿠폰 아이디",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "coupons",
+                "이미 만료된 쿠폰 아이디"
+              ]
+            },
+            "description": "[상태전이] 이미 만료된 쿠폰의 상태를 조회하는 경우에 대한 응답을 검증"
+          },
+          "response": [
+            {
+              "id": "762de814-b34d-4ac7-978a-4b76a09f3964",
+              "name": "GetCouponStatusExpired",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/coupons/이미 만료된 쿠폰 아이디",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "coupons",
+                    "이미 만료된 쿠폰 아이디"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"couponId\": \"이미 만료된 쿠폰 아이디\",\n  \"status\": \"EXPIRED\",\n  \"minOrderAmount\": 10000,\n  \"expiresAt\": \"2024-12-31T23:59:59Z\"\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": ""
+    }
+  ]
+}
